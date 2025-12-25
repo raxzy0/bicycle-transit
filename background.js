@@ -45,19 +45,26 @@ chrome.action.onClicked.addListener((tab) => {
 
 // Monitor tab updates to inject content script if needed
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  // Check if the tab is a Google Maps page
+  // Check if the tab is a Google Maps page using proper URL validation
   if (changeInfo.status === 'complete' && tab.url) {
-    const isMapsPage = tab.url.includes('google.com/maps') || tab.url.includes('maps.google.com');
-    
-    if (isMapsPage) {
-      console.log('Bicycle Transit: Google Maps page loaded', tab.url);
+    try {
+      const url = new URL(tab.url);
+      const isMapsPage = (url.hostname === 'maps.google.com' || 
+                         url.hostname === 'www.google.com') && 
+                         url.pathname.startsWith('/maps');
       
-      // Send a message to content script to refresh if settings changed
-      chrome.tabs.sendMessage(tabId, { 
-        action: 'pageLoaded' 
-      }).catch(() => {
-        // Content script might not be ready yet, that's ok
-      });
+      if (isMapsPage) {
+        console.log('Bicycle Transit: Google Maps page loaded', tab.url);
+        
+        // Send a message to content script to refresh if settings changed
+        chrome.tabs.sendMessage(tabId, { 
+          action: 'pageLoaded' 
+        }).catch(() => {
+          // Content script might not be ready yet, that's ok
+        });
+      }
+    } catch (error) {
+      // Invalid URL, ignore
     }
   }
 });
