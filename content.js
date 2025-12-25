@@ -129,22 +129,27 @@ function findWalkingSegments() {
     }
   });
   
-  // Also look for sections with specific text patterns
-  const allDivs = document.querySelectorAll('div');
-  allDivs.forEach(div => {
-    const text = div.textContent || '';
-    if ((text.includes('Walk') || text.includes('walk')) && 
-        text.match(/\d+\s*(min|mins|minute|minutes)/) &&
-        !div.hasAttribute('data-bicycle-transit-processed') &&
-        div.clientHeight > 0) {
-      
-      // Check if it's not already in our segments
-      const isNew = !segments.some(seg => seg.contains(div) || div.contains(seg));
-      if (isNew && isWalkingSegment(div)) {
-        segments.push(div);
+  // Also look for sections with specific text patterns in directions container only
+  const directionsContainer = document.querySelector('#section-directions-trip-0') || 
+                               document.querySelector('[role="main"]');
+  
+  if (directionsContainer) {
+    const candidateDivs = directionsContainer.querySelectorAll('div');
+    candidateDivs.forEach(div => {
+      const text = div.textContent || '';
+      if ((text.includes('Walk') || text.includes('walk')) && 
+          text.match(/\d+\s*(min|mins|minute|minutes)/) &&
+          !div.hasAttribute('data-bicycle-transit-processed') &&
+          div.clientHeight > 0) {
+        
+        // Check if it's not already in our segments
+        const isNew = !segments.some(seg => seg.contains(div) || div.contains(seg));
+        if (isNew && isWalkingSegment(div)) {
+          segments.push(div);
+        }
       }
-    }
-  });
+    });
+  }
   
   return segments;
 }
@@ -298,8 +303,41 @@ function removeModifications() {
 }
 
 // Periodic check for new routes (fallback if MutationObserver misses something)
-setInterval(() => {
-  if (settings.enabled) {
-    processExistingRoutes();
+// Only run when on a directions page
+let fallbackInterval = null;
+
+function startFallbackCheck() {
+  if (fallbackInterval) return;
+  
+  fallbackInterval = setInterval(() => {
+    if (settings.enabled && window.location.href.includes('/dir/')) {
+      processExistingRoutes();
+    }
+  }, 3000);
+}
+
+function stopFallbackCheck() {
+  if (fallbackInterval) {
+    clearInterval(fallbackInterval);
+    fallbackInterval = null;
   }
-}, 3000);
+}
+
+// Start fallback check if already on directions page
+if (window.location.href.includes('/dir/')) {
+  startFallbackCheck();
+}
+
+// Monitor URL changes
+let lastUrl = location.href;
+new MutationObserver(() => {
+  const url = location.href;
+  if (url !== lastUrl) {
+    lastUrl = url;
+    if (url.includes('/dir/')) {
+      startFallbackCheck();
+    } else {
+      stopFallbackCheck();
+    }
+  }
+}).observe(document, { subtree: true, childList: true });

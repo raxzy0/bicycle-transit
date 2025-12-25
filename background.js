@@ -88,15 +88,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-// Periodic cleanup or maintenance tasks (optional)
-// Could be used to clean up old cached data, etc.
-chrome.alarms.create('maintenance', { periodInMinutes: 60 });
-
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'maintenance') {
-    console.log('Bicycle Transit: Running maintenance tasks');
-    // Add any periodic maintenance tasks here
-  }
-});
+// Note: Periodic maintenance tasks can be added here if needed in the future
+// For example: cleaning up old cached data, checking for updates, etc.
 
 console.log('Bicycle Transit: Background service worker loaded');

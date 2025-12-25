@@ -1,17 +1,37 @@
 /* Bicycle Transit - Injected Styles for Google Maps */
 
+/* CSS Custom Properties for theming */
+:root {
+  --bt-primary-color: #667eea;
+  --bt-secondary-color: #764ba2;
+  --bt-badge-shadow: rgba(102, 126, 234, 0.3);
+  --bt-badge-shadow-hover: rgba(102, 126, 234, 0.4);
+  --bt-chip-bg: rgba(255, 255, 255, 0.25);
+}
+
+/* Dark mode color adjustments */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bt-primary-color: #5568d3;
+    --bt-secondary-color: #6338a0;
+    --bt-badge-shadow: rgba(85, 104, 211, 0.3);
+    --bt-badge-shadow-hover: rgba(85, 104, 211, 0.4);
+    --bt-chip-bg: rgba(255, 255, 255, 0.2);
+  }
+}
+
 .bicycle-transit-badge {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 8px 0;
   padding: 10px 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--bt-primary-color) 0%, var(--bt-secondary-color) 100%);
   color: white;
   border-radius: 8px;
   font-size: 13px;
   line-height: 1.4;
-  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 6px var(--bt-badge-shadow);
   animation: slideIn 0.3s ease-out;
   cursor: help;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -19,7 +39,7 @@
 
 .bicycle-transit-badge:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px var(--bt-badge-shadow-hover);
 }
 
 .bicycle-transit-icon {
@@ -46,7 +66,7 @@
   display: inline-block;
   margin-left: 6px;
   padding: 2px 6px;
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--bt-chip-bg);
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
@@ -78,18 +98,6 @@
   
   .time-saved {
     font-size: 10px;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .bicycle-transit-badge {
-    background: linear-gradient(135deg, #5568d3 0%, #6338a0 100%);
-    box-shadow: 0 2px 6px rgba(85, 104, 211, 0.3);
-  }
-  
-  .bicycle-transit-badge:hover {
-    box-shadow: 0 4px 12px rgba(85, 104, 211, 0.4);
   }
 }
 

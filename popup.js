@@ -81,6 +81,9 @@ async function handleEnabledChange(event) {
   await saveSettings({ enabled: event.target.checked });
 }
 
+// Timeout for debouncing speed changes
+let speedChangeTimeout = null;
+
 // Handle cycling speed change
 function handleSpeedChange(event) {
   const speed = parseInt(event.target.value);
@@ -88,8 +91,10 @@ function handleSpeedChange(event) {
   updateSliderGradient(speed);
   
   // Debounce saving
-  clearTimeout(handleSpeedChange.timeout);
-  handleSpeedChange.timeout = setTimeout(async () => {
+  if (speedChangeTimeout) {
+    clearTimeout(speedChangeTimeout);
+  }
+  speedChangeTimeout = setTimeout(async () => {
     await saveSettings({ cyclingSpeed: speed });
   }, 500);
 }
